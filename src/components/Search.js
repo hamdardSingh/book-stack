@@ -8,7 +8,6 @@ import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Book from './Book';
 
 class Search extends Component {
@@ -20,7 +19,7 @@ class Search extends Component {
   updateQuery = (query) => {
     this.setState({query});
   }
-  
+
   static getDerivedStateFromProps(props){
     return props;
   }
@@ -28,7 +27,7 @@ class Search extends Component {
   moveShelf =this.props.moveShelf;
   render(){
     const {books,query} = this.state;
-    const filteredBooks = query === '' ? books : books.filter((book)=>book.title.toLowerCase().includes(query.toLowerCase()))
+    const filteredBooks = query === '' ? [] : books.filter((book)=>book.title.toLowerCase().includes(query.toLowerCase()))
     return(
       <div>
         <AppBar position="static" color="primary">
@@ -44,7 +43,7 @@ class Search extends Component {
           </Toolbar>
         </AppBar>
         <Container style={{paddingTop:'2rem'}}>
-          {filteredBooks.length !== books.length && (<Typography className='text-center mb-2' variant="body1" color="textSecondary" component="p">Now Showing {filteredBooks.length} of {books.length} <Button onClick={() => this.updateQuery('')}>Show all</Button></Typography>)}
+          {filteredBooks.length !== books.length && (<Typography className='text-center mb-2' variant="body1" color="textSecondary" component="p">Now Showing {filteredBooks.length} of {books.length} </Typography>)}
           <Grid container spacing={2} className="grid">
           {
             filteredBooks.map((book)=>{

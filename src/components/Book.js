@@ -30,8 +30,7 @@ export const Book = (props) => {
       myFavourites = myFavourites.filter((bookId)=> {
         if(bookId === id)
           favID = [];
-        else
-          return bookId;
+        return bookId !== id;
       });
       localStorage.setItem('myFavourites', JSON.stringify([...myFavourites, ...favID]));
     }else{
@@ -61,9 +60,9 @@ export const Book = (props) => {
         <IconButton onClick={(e)=>{setFavourite(e, book.id)}} aria-label="add to favorites"><FavoriteIcon className={ (isFavourite(book.id)) ? 'active' : ''} /></IconButton>
         <IconButton aria-controls={book.id} aria-haspopup="true" onClick={handleClick}><MoreVertIcon /></IconButton>
         <Menu id={book.id} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem onClick={()=>{moveShelf(book,'currentlyReading'); handleClose()}}>Currently Reading</MenuItem>
-          <MenuItem onClick={()=>{moveShelf(book,'wantToRead'); handleClose()}}>Want to Read</MenuItem>
-          <MenuItem onClick={()=>{moveShelf(book,'read'); handleClose()}}>Read</MenuItem>
+          <MenuItem className={book.shelf === 'currentlyReading' ? 'active' : ''} onClick={()=>{moveShelf(book,'currentlyReading'); handleClose()}}>Currently Reading</MenuItem>
+          <MenuItem className={book.shelf === 'wantToRead' ? 'active' : ''} onClick={()=>{moveShelf(book,'wantToRead'); handleClose()}}>Want to Read</MenuItem>
+          <MenuItem className={book.shelf === 'read' ? 'active' : ''} onClick={()=>{moveShelf(book,'read'); handleClose()}}>Read</MenuItem>
         </Menu>
       </CardActions>
     </Card>
