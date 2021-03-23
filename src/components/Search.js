@@ -9,15 +9,30 @@ import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Book from './Book';
+import * as BookAPI from '../BookAPI';
 
 class Search extends Component {
   state = {
     books: this.props.books,
-    query: ''
+    shelfs: this.props.shelfs,
+    query: '',
+    filteredBooks: []
   }
 
-  updateQuery = (query) => {
-    this.setState({query});
+  search = (query) => {
+    if(query.trim() !== ""){
+      this.setState({query});
+      BookAPI.search(query).then((books)=>{
+        if(books && books.length)
+          this.setState({filteredBooks: books})
+        else
+          this.setState({filteredBooks: []})
+      });
+    }
+    else{
+      this.setState({filteredBooks: []})
+    }
+
   }
 
   static getDerivedStateFromProps(props){
@@ -26,8 +41,9 @@ class Search extends Component {
 
   moveShelf =this.props.moveShelf;
   render(){
-    const {books,query} = this.state;
-    const filteredBooks = query === '' ? [] : books.filter((book)=>book.title.toLowerCase().includes(query.toLowerCase()))
+
+    const {books,query,filteredBooks} = this.state;
+
     return(
       <div>
         <AppBar position="static" color="primary">
@@ -38,18 +54,17 @@ class Search extends Component {
               </IconButton>
             </Link>
             <form  noValidate autoComplete="off" style={{flexGrow:1}}>
-              <Input placeholder="Search" autoFocus={true} style={{display:'block',color:'#fff'}} onChange={(event) => this.updateQuery(event.target.value)} />
+              <Input placeholder="Search" autoFocus={true} style={{display:'block',color:'#fff'}} onChange={(event) => this.search(event.target.value)} />
             </form>
           </Toolbar>
         </AppBar>
         <Container style={{paddingTop:'2rem'}}>
-          {filteredBooks.length !== books.length && (<Typography className='text-center mb-2' variant="body1" color="textSecondary" component="p">Now Showing {filteredBooks.length} of {books.length} </Typography>)}
           <Grid container spacing={2} className="grid">
           {
             filteredBooks.map((book)=>{
               return (
                 <Grid key={book.id} item xs={6} md={3} lg={2}>
-                  <Book book={book} moveShelf={this.moveShelf} />
+                  <Book book={book} shelfs={this.state.shelfs} moveShelf={this.moveShelf} />
                 </Grid>
               )
             })

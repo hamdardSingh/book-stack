@@ -12,7 +12,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 export const Book = (props) => {
-  const {book, moveShelf} = props;
+  const {book, shelfs, moveShelf} = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (e) => {
@@ -53,16 +53,16 @@ export const Book = (props) => {
         </CardMedia>
         <CardContent>
           <Typography gutterBottom variant="h6" className="h6 nowrap" component="h6" title={book.title}>{book.title}</Typography>
-          <Typography variant="body2" className="nowrap" color="textSecondary" component="p" title={ (book.authors).join(', ') }>{ (book.authors).join(', ') }</Typography>
+          <Typography variant="body2" className="nowrap" color="textSecondary" component="p" title={ (book.authors) ? (book.authors).join(', ') : '' }>{ (book.authors) ? (book.authors).join(', ') : '' }</Typography>
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
         <IconButton onClick={(e)=>{setFavourite(e, book.id)}} aria-label="add to favorites"><FavoriteIcon className={ (isFavourite(book.id)) ? 'active' : ''} /></IconButton>
         <IconButton aria-controls={book.id} aria-haspopup="true" onClick={handleClick}><MoreVertIcon /></IconButton>
         <Menu id={book.id} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem className={book.shelf === 'currentlyReading' ? 'active' : ''} onClick={()=>{moveShelf(book,'currentlyReading'); handleClose()}}>Currently Reading</MenuItem>
-          <MenuItem className={book.shelf === 'wantToRead' ? 'active' : ''} onClick={()=>{moveShelf(book,'wantToRead'); handleClose()}}>Want to Read</MenuItem>
-          <MenuItem className={book.shelf === 'read' ? 'active' : ''} onClick={()=>{moveShelf(book,'read'); handleClose()}}>Read</MenuItem>
+          <MenuItem className={shelfs.currentlyReading.includes(book.id) ? 'active' : ''} onClick={()=>{moveShelf(book,'currentlyReading'); handleClose()}}>Currently Reading</MenuItem>
+          <MenuItem className={shelfs.wantToRead.includes(book.id) ? 'active' : ''} onClick={()=>{moveShelf(book,'wantToRead'); handleClose()}}>Want to Read</MenuItem>
+          <MenuItem className={shelfs.read.includes(book.id) ? 'active' : ''} onClick={()=>{moveShelf(book,'read'); handleClose()}}>Read</MenuItem>
         </Menu>
       </CardActions>
     </Card>

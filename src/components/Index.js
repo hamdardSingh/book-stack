@@ -13,12 +13,16 @@ import * as BookAPI from '../BookAPI';
 class Index extends Component {
   state = {
     books: [],
-    backdrop: true
+    backdrop: true,
+    shelfs:{
+      currentlyReading: [],
+      read: [],
+      wantToRead: []
+    }
   }
   moveShelf = (book,shelf) => {
     this.setState({backdrop:true});
-    BookAPI.update(book,shelf)
-    .then((books)=>{
+    BookAPI.update(book,shelf).then((books)=>{
       //We can update it locally or refetch the state with getAll API
       this.setState((currentState)=>{
         (currentState.books).map((currentBook) => {
@@ -28,14 +32,25 @@ class Index extends Component {
           return currentBook;
         })
         currentState.backdrop = false;
+        currentState.shelfs = books;
         return currentState;
       })
     });
   }
-  componentDidMount(){
+
+  getMyBooks = () => {
     BookAPI.getAll().then((books)=>{
-      this.setState({books,backdrop:false})
+      let shelfs = this.state.shelfs;
+      books.forEach((book) => {
+        if(!shelfs[book.shelf].includes(book.id)){
+          shelfs[book.shelf].push(book.id)
+        }
+      })
+      this.setState({books,backdrop:false,shelfs: shelfs})
     })
+  }
+  componentDidMount(){
+    this.getMyBooks();
   }
   render() {
     const currentlyReading = this.state.books.filter((book) => book.shelf === "currentlyReading");
@@ -53,7 +68,7 @@ class Index extends Component {
                 currentlyReading.map((book)=>{
                   return (
                     <Grid key={book.id} item xs={6} md={3} lg={2}>
-                      <Book book={book} moveShelf={this.moveShelf} />
+                      <Book book={book} shelfs={this.state.shelfs} moveShelf={this.moveShelf} />
                     </Grid>
                   )
                 })
@@ -65,7 +80,7 @@ class Index extends Component {
                 wantToRead.map((book)=>{
                   return (
                     <Grid key={book.id} item xs={6} md={3} lg={2}>
-                      <Book book={book} moveShelf={this.moveShelf} />
+                      <Book book={book} shelfs={this.state.shelfs} moveShelf={this.moveShelf} />
                     </Grid>
                   )
                 })
@@ -77,7 +92,7 @@ class Index extends Component {
                 read.map((book)=>{
                   return (
                     <Grid key={book.id} item xs={6} md={3} lg={2}>
-                      <Book book={book} moveShelf={this.moveShelf} />
+                      <Book book={book} shelfs={this.state.shelfs} moveShelf={this.moveShelf} />
                     </Grid>
                   )
                 })
@@ -88,7 +103,7 @@ class Index extends Component {
         )} />
 
         <Route exact path="/search" render={() => (
-          <Search books={this.state.books} moveShelf={this.moveShelf} />
+          <Search books={this.state.books} shelfs={this.state.shelfs} moveShelf={this.moveShelf} />
         )} />
         <Backdrop open={this.state.backdrop} className="backdrop">
           <CircularProgress color="inherit" />
